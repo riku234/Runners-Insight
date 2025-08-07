@@ -1,40 +1,29 @@
-FROM python:3.9-slim
+# 1. ベースイメージを選択
+FROM python:3.10-slim
 
-# 環境変数を設定
+# 2. 環境変数を設定
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# 作業ディレクトリを設定
+# 3. 作業ディレクトリを設定
 WORKDIR /app
 
-# システムの依存関係をインストール
+# 4. OSのパッケージをインストール (本番用に最適化)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        postgresql-client \
-        build-essential \
-        libpq-dev \
-        libgl1-mesa-glx \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        libgomp1 \
-        libgthread-2.0-0 \
+    # PostgreSQLに接続するために必要
+    postgresql-client \
+    # C拡張モジュールを持つライブラリのビルドに必要
+    build-essential \
+    # OpenCV (headless) の実行に必要最小限のライブラリ
+    libgl1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Python依存関係をインストール
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 5. requirements.txtをコピーして、Pythonライブラリをインストール
+#    この段階で実行することで、コード変更時のビルドキャッシュを有効活用する
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
-# アプリケーションコードをコピー
-COPY . .
-
-# 静的ファイルを収集
-RUN python manage.py collectstatic --noinput
-
-# ポートを公開
-EXPOSE 8000
-
-# Gunicornでアプリケーションを起動
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "runners_insight.wsgi:application"]
+# 6. アプリケーションのコードをコピー
+COPY . /app
