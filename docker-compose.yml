@@ -1,3 +1,4 @@
+# Production-ready Docker Compose configuration
 # version属性は削除
 services:
   redis:
