@@ -34,7 +34,8 @@ function App() {
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const API_BASE = 'http://127.0.0.1:8000/api'
+    // APIベースURL - 相対パス（Nginxリバースプロキシ経由）
+  const API_BASE = '/api'
 
   const checkApiHealth = async () => {
     try {
