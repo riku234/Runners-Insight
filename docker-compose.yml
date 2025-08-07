@@ -27,7 +27,7 @@ services:
       - ./backend/.env
     depends_on:
       - redis
-    command: celery -A runners_insight worker --loglevel=info
+    command: celery -A runners_insight.celery worker --loglevel=info
 
   frontend:
     build: ./frontend
