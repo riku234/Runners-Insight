@@ -1,6 +1,8 @@
 """
 ローカル動作確認用のシンプル設定
 """
+# settings.py の先頭に追加
+from decouple import config, Csv
 import os
 from pathlib import Path
 
